@@ -56,9 +56,6 @@
           "enabled": true,
           "fingerprint": "firefox"
         }
-      },
-      "transport": {
-        "type": "tcp"
       }
     },
     {
@@ -75,9 +72,6 @@
           "enabled": true,
           "fingerprint": "edge"
         }
-      },
-      "transport": {
-        "type": "tcp"
       }
     },
     {
@@ -94,9 +88,6 @@
           "enabled": true,
           "fingerprint": "firefox"
         }
-      },
-      "transport": {
-        "type": "tcp"
       }
     },
     {
@@ -113,9 +104,6 @@
           "enabled": true,
           "fingerprint": "edge"
         }
-      },
-      "transport": {
-        "type": "tcp"
       }
     },
     {
@@ -132,9 +120,6 @@
           "enabled": true,
           "fingerprint": "firefox"
         }
-      },
-      "transport": {
-        "type": "tcp"
       }
     },
     {
@@ -151,9 +136,6 @@
           "enabled": true,
           "fingerprint": "edge"
         }
-      },
-      "transport": {
-        "type": "tcp"
       }
     },
     {
@@ -170,9 +152,6 @@
           "enabled": true,
           "fingerprint": "edge"
         }
-      },
-      "transport": {
-        "type": "tcp"
       }
     },
     {
@@ -189,9 +168,6 @@
           "enabled": true,
           "fingerprint": "firefox"
         }
-      },
-      "transport": {
-        "type": "tcp"
       }
     },
     {
@@ -288,9 +264,6 @@
           "enabled": true,
           "fingerprint": "edge"
         }
-      },
-      "transport": {
-        "type": "tcp"
       }
     },
     {
