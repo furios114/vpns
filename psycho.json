@@ -1,0 +1,523 @@
+{
+  "dns": {
+    "servers": [
+      "1.1.1.1",
+      "1.0.0.1"
+    ],
+    "queryStrategy": "UseIPv4"
+  },
+  "routing": {
+    "domainStrategy": "AsIs",
+    "rules": [
+      {
+        "type": "field",
+        "protocol": ["bittorrent"],
+        "outboundTag": "block"
+      },
+      {
+        "type": "field",
+        "domain": ["regexp:\\.ru$", "vk.com", "yandex.ru"],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "ip": ["127.0.0.0/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "network": "tcp,udp",
+        "balancerTag": "PSYCHO_BAL"
+      }
+    ],
+    "balancers": [
+      {
+        "tag": "PSYCHO_BAL",
+        "selector": [
+          "de-vless",
+          "de-vless-2",
+          "fi-vless",
+          "fi-vless-2",
+          "fr-vless",
+          "it-vless",
+          "nl-vless",
+          "nl-vless-2",
+          "pl-vless-grpc",
+          "pl-vless-grpc-2",
+          "pl-vless-grpc-3",
+          "pl-vless-grpc-4",
+          "se-vless",
+          "ch-vless-grpc"
+        ],
+        "strategy": {
+          "type": "leastLoad",
+          "settings": {
+            "expected": 3,
+            "baselines": ["120ms", "250ms", "500ms"]
+          }
+        },
+        "fallbackTag": "de-vless"
+      }
+    ]
+  },
+  "inbounds": [
+    {
+      "tag": "socks",
+      "port": 10808,
+      "listen": "127.0.0.1",
+      "protocol": "socks",
+      "settings": {
+        "udp": true,
+        "auth": "noauth"
+      },
+      "sniffing": {
+        "enabled": true,
+        "routeOnly": false,
+        "destOverride": ["http", "tls", "quic"]
+      }
+    },
+    {
+      "tag": "http",
+      "port": 10809,
+      "listen": "127.0.0.1",
+      "protocol": "http",
+      "settings": {
+        "allowTransparent": false
+      },
+      "sniffing": {
+        "enabled": true,
+        "routeOnly": false,
+        "destOverride": ["http", "tls", "quic"]
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "tag": "de-vless",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "de-three.letsgodance.site",
+            "port": 443,
+            "users": [
+              {
+                "id": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "de-three.letsgodance.site",
+          "publicKey": "AHefH9641TgmSxrjZ4FLmbHbCVoMqgGavuEPCi3kDAg",
+          "shortId": "8844212ec2665a78",
+          "fingerprint": "firefox"
+        }
+      }
+    },
+    {
+      "tag": "de-vless-2",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "de-two.letsgodance.site",
+            "port": 443,
+            "users": [
+              {
+                "id": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "de-two.letsgodance.site",
+          "publicKey": "1D0SMyHvFMr72srLodeSqa1oOsBCsvGdKvINrJGCuic",
+          "shortId": "37f60bd15d93e3f4",
+          "fingerprint": "edge"
+        }
+      }
+    },
+    {
+      "tag": "fi-vless",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "fi-two.letsgodance.site",
+            "port": 443,
+            "users": [
+              {
+                "id": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "fi-two.letsgodance.site",
+          "publicKey": "Ec7XkHaTmlDp_C2SEQaEQYluocVIIS3BdP0815O_AEQ",
+          "shortId": "800d96b2ad1cae61",
+          "fingerprint": "firefox"
+        }
+      }
+    },
+    {
+      "tag": "fi-vless-2",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "fi-one.letsgodance.site",
+            "port": 443,
+            "users": [
+              {
+                "id": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "fi-one.letsgodance.site",
+          "publicKey": "XIBrs2_87DuLTAOD05LMSfwyPsmUZMJESQCjbRNhwh0",
+          "shortId": "91a9f9d61fb09d39",
+          "fingerprint": "edge"
+        }
+      }
+    },
+    {
+      "tag": "fr-vless",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "151.241.228.71",
+            "port": 443,
+            "users": [
+              {
+                "id": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "yahoo.com",
+          "publicKey": "0o5QdbYgGx8EjLOdrrnromgdprPGO8OTnPK9VMVe9VI",
+          "shortId": "cd8971da5a669139",
+          "fingerprint": "firefox"
+        }
+      }
+    },
+    {
+      "tag": "it-vless",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "it-two.letsgodance.site",
+            "port": 443,
+            "users": [
+              {
+                "id": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "it-two.letsgodance.site",
+          "publicKey": "K8LxbhrcgxM7bIW8SGKmEvqn-zbAGqyi4G37_u-kbh4",
+          "shortId": "c2b104f3483063c5",
+          "fingerprint": "edge"
+        }
+      }
+    },
+    {
+      "tag": "nl-vless",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "nl-one.letsgodance.site",
+            "port": 443,
+            "users": [
+              {
+                "id": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "nl-one.letsgodance.site",
+          "publicKey": "s7bhpC1Z6AqLC8XSr_wMQx_tQIzrZmpktn0K-rfFiVw",
+          "fingerprint": "edge"
+        }
+      }
+    },
+    {
+      "tag": "nl-vless-2",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "212.41.1.252",
+            "port": 443,
+            "users": [
+              {
+                "id": "a42939a4-c61c-4ecc-886b-3a317bdf4452",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "google.com",
+          "publicKey": "vZ22ThhkpXUd5-tY-v5TTrouLHjgYYmeQgqeLt7HRz0",
+          "fingerprint": "firefox"
+        }
+      }
+    },
+    {
+      "tag": "pl-vless-grpc",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "144.31.2.52",
+            "port": 443,
+            "users": [
+              {
+                "id": "a42939a4-c61c-4ecc-886b-3a317bdf4452",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "grpcSettings": {
+          "serviceName": "grpc-tunnel"
+        },
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "dl.google.com",
+          "publicKey": "HFTFARa1OS53m4HWnjwtZ0J3lu7aoKkE7OujIyM62QI",
+          "shortId": "2a236a7fcbe0ce61",
+          "fingerprint": "firefox"
+        }
+      }
+    },
+    {
+      "tag": "pl-vless-grpc-2",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "144.31.3.59",
+            "port": 443,
+            "users": [
+              {
+                "id": "a42939a4-c61c-4ecc-886b-3a317bdf4452",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "grpcSettings": {
+          "serviceName": "grpc-tunnel"
+        },
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "dl.google.com",
+          "publicKey": "9MaTQKr9HwnYZSuELuWJC-uf6ghf4mNiHZ4_fKTYxFs",
+          "shortId": "da58ee1ebec20dbd",
+          "fingerprint": "qq"
+        }
+      }
+    },
+    {
+      "tag": "pl-vless-grpc-3",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "95.85.246.79",
+            "port": 443,
+            "users": [
+              {
+                "id": "a42939a4-c61c-4ecc-886b-3a317bdf4452",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "grpcSettings": {
+          "serviceName": "grpc-tunnel"
+        },
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "dl.google.com",
+          "publicKey": "HFTFARa1OS53m4HWnjwtZ0J3lu7aoKkE7OujIyM62QI",
+          "shortId": "2a236a7fcbe0ce61",
+          "fingerprint": "firefox"
+        }
+      }
+    },
+    {
+      "tag": "pl-vless-grpc-4",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "31.130.150.244",
+            "port": 443,
+            "users": [
+              {
+                "id": "a42939a4-c61c-4ecc-886b-3a317bdf4452",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "grpcSettings": {
+          "serviceName": "grpc-tunnel"
+        },
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "dl.google.com",
+          "publicKey": "HFTFARa1OS53m4HWnjwtZ0J3lu7aoKkE7OujIyM62QI",
+          "shortId": "2a236a7fcbe0ce61",
+          "fingerprint": "qq"
+        }
+      }
+    },
+    {
+      "tag": "se-vless",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "swe-one.letsgodance.site",
+            "port": 443,
+            "users": [
+              {
+                "id": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "swe-one.letsgodance.site",
+          "publicKey": "0DU2XI6J-aVzvYzrKQ7XOI9WPRMOADKTyn2V9E71WA8",
+          "shortId": "b4c513c67294b791",
+          "fingerprint": "edge"
+        }
+      }
+    },
+    {
+      "tag": "ch-vless-grpc",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "176.65.144.125",
+            "port": 443,
+            "users": [
+              {
+                "id": "a42939a4-c61c-4ecc-886b-3a317bdf4452",
+                "encryption": "none",
+                "flow": "xtls-rprx-vision"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "grpcSettings": {
+          "serviceName": "grpc-tunnel"
+        },
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "dl.google.com",
+          "publicKey": "HFTFARa1OS53m4HWnjwtZ0J3lu7aoKkE7OujIyM62QI",
+          "shortId": "2a236a7fcbe0ce61",
+          "fingerprint": "firefox"
+        }
+      }
+    },
+    {
+      "tag": "direct",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "block",
+      "protocol": "blackhole"
+    }
+  ]
+}
