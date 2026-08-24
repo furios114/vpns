@@ -1,523 +1,325 @@
 {
+  "log": { "level": "info" },
   "dns": {
     "servers": [
-      "1.1.1.1",
-      "1.0.0.1"
-    ],
-    "queryStrategy": "UseIPv4"
-  },
-  "routing": {
-    "domainStrategy": "AsIs",
-    "rules": [
-      {
-        "type": "field",
-        "protocol": ["bittorrent"],
-        "outboundTag": "block"
-      },
-      {
-        "type": "field",
-        "domain": ["regexp:\\.ru$", "vk.com", "yandex.ru"],
-        "outboundTag": "direct"
-      },
-      {
-        "type": "field",
-        "ip": ["127.0.0.0/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"],
-        "outboundTag": "direct"
-      },
-      {
-        "type": "field",
-        "network": "tcp,udp",
-        "balancerTag": "PSYCHO_BAL"
-      }
-    ],
-    "balancers": [
-      {
-        "tag": "PSYCHO_BAL",
-        "selector": [
-          "de-vless",
-          "de-vless-2",
-          "fi-vless",
-          "fi-vless-2",
-          "fr-vless",
-          "it-vless",
-          "nl-vless",
-          "nl-vless-2",
-          "pl-vless-grpc",
-          "pl-vless-grpc-2",
-          "pl-vless-grpc-3",
-          "pl-vless-grpc-4",
-          "se-vless",
-          "ch-vless-grpc"
-        ],
-        "strategy": {
-          "type": "leastLoad",
-          "settings": {
-            "expected": 3,
-            "baselines": ["120ms", "250ms", "500ms"]
-          }
-        },
-        "fallbackTag": "de-vless"
-      }
+      { "tag": "dns-google", "address": "1.1.1.1" },
+      { "tag": "dns-cloudflare", "address": "1.0.0.1" }
     ]
   },
   "inbounds": [
     {
-      "tag": "socks",
-      "port": 10808,
+      "type": "socks",
+      "tag": "socks-in",
       "listen": "127.0.0.1",
-      "protocol": "socks",
-      "settings": {
-        "udp": true,
-        "auth": "noauth"
-      },
-      "sniffing": {
-        "enabled": true,
-        "routeOnly": false,
-        "destOverride": ["http", "tls", "quic"]
-      }
+      "listen_port": 10808
     },
     {
-      "tag": "http",
-      "port": 10809,
+      "type": "http",
+      "tag": "http-in",
       "listen": "127.0.0.1",
-      "protocol": "http",
-      "settings": {
-        "allowTransparent": false
-      },
-      "sniffing": {
-        "enabled": true,
-        "routeOnly": false,
-        "destOverride": ["http", "tls", "quic"]
-      }
+      "listen_port": 10809
     }
   ],
   "outbounds": [
     {
-      "tag": "de-vless",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "de-three.letsgodance.site",
-            "port": 443,
-            "users": [
-              {
-                "id": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
-                "encryption": "none",
-                "flow": "xtls-rprx-vision"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "de-three.letsgodance.site",
-          "publicKey": "AHefH9641TgmSxrjZ4FLmbHbCVoMqgGavuEPCi3kDAg",
-          "shortId": "8844212ec2665a78",
+      "type": "selector",
+      "tag": "PSYCHO-VPN",
+      "outbounds": [
+        "🇩🇪 Германия 1",
+        "🇩🇪 Германия 2",
+        "🇫🇮 Финляндия 1",
+        "🇫🇮 Финляндия 2",
+        "🇫🇷 Франция",
+        "🇮🇹 Италия",
+        "🇳🇱 Нидерланды 1",
+        "🇳🇱 Нидерланды 2",
+        "🇵🇱 Польша 1",
+        "🇵🇱 Польша 2",
+        "🇵🇱 Польша 3",
+        "🇵🇱 Польша 4",
+        "🇸🇪 Швеция",
+        "🇨🇭 Швейцария"
+      ],
+      "default": "🇩🇪 Германия 1"
+    },
+    {
+      "type": "vless",
+      "tag": "🇩🇪 Германия 1",
+      "server": "de-three.letsgodance.site",
+      "server_port": 443,
+      "uuid": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "de-three.letsgodance.site",
+        "utls": {
+          "enabled": true,
           "fingerprint": "firefox"
         }
+      },
+      "transport": {
+        "type": "tcp"
       }
     },
     {
-      "tag": "de-vless-2",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "de-two.letsgodance.site",
-            "port": 443,
-            "users": [
-              {
-                "id": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
-                "encryption": "none",
-                "flow": "xtls-rprx-vision"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "de-two.letsgodance.site",
-          "publicKey": "1D0SMyHvFMr72srLodeSqa1oOsBCsvGdKvINrJGCuic",
-          "shortId": "37f60bd15d93e3f4",
+      "type": "vless",
+      "tag": "🇩🇪 Германия 2",
+      "server": "de-two.letsgodance.site",
+      "server_port": 443,
+      "uuid": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "de-two.letsgodance.site",
+        "utls": {
+          "enabled": true,
           "fingerprint": "edge"
         }
+      },
+      "transport": {
+        "type": "tcp"
       }
     },
     {
-      "tag": "fi-vless",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "fi-two.letsgodance.site",
-            "port": 443,
-            "users": [
-              {
-                "id": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
-                "encryption": "none",
-                "flow": "xtls-rprx-vision"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "fi-two.letsgodance.site",
-          "publicKey": "Ec7XkHaTmlDp_C2SEQaEQYluocVIIS3BdP0815O_AEQ",
-          "shortId": "800d96b2ad1cae61",
+      "type": "vless",
+      "tag": "🇫🇮 Финляндия 1",
+      "server": "fi-two.letsgodance.site",
+      "server_port": 443,
+      "uuid": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "fi-two.letsgodance.site",
+        "utls": {
+          "enabled": true,
           "fingerprint": "firefox"
         }
+      },
+      "transport": {
+        "type": "tcp"
       }
     },
     {
-      "tag": "fi-vless-2",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "fi-one.letsgodance.site",
-            "port": 443,
-            "users": [
-              {
-                "id": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
-                "encryption": "none",
-                "flow": "xtls-rprx-vision"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "fi-one.letsgodance.site",
-          "publicKey": "XIBrs2_87DuLTAOD05LMSfwyPsmUZMJESQCjbRNhwh0",
-          "shortId": "91a9f9d61fb09d39",
+      "type": "vless",
+      "tag": "🇫🇮 Финляндия 2",
+      "server": "fi-one.letsgodance.site",
+      "server_port": 443,
+      "uuid": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "fi-one.letsgodance.site",
+        "utls": {
+          "enabled": true,
           "fingerprint": "edge"
         }
+      },
+      "transport": {
+        "type": "tcp"
       }
     },
     {
-      "tag": "fr-vless",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "151.241.228.71",
-            "port": 443,
-            "users": [
-              {
-                "id": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
-                "encryption": "none",
-                "flow": "xtls-rprx-vision"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "yahoo.com",
-          "publicKey": "0o5QdbYgGx8EjLOdrrnromgdprPGO8OTnPK9VMVe9VI",
-          "shortId": "cd8971da5a669139",
+      "type": "vless",
+      "tag": "🇫🇷 Франция",
+      "server": "151.241.228.71",
+      "server_port": 443,
+      "uuid": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "yahoo.com",
+        "utls": {
+          "enabled": true,
           "fingerprint": "firefox"
         }
+      },
+      "transport": {
+        "type": "tcp"
       }
     },
     {
-      "tag": "it-vless",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "it-two.letsgodance.site",
-            "port": 443,
-            "users": [
-              {
-                "id": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
-                "encryption": "none",
-                "flow": "xtls-rprx-vision"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "it-two.letsgodance.site",
-          "publicKey": "K8LxbhrcgxM7bIW8SGKmEvqn-zbAGqyi4G37_u-kbh4",
-          "shortId": "c2b104f3483063c5",
+      "type": "vless",
+      "tag": "🇮🇹 Италия",
+      "server": "it-two.letsgodance.site",
+      "server_port": 443,
+      "uuid": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "it-two.letsgodance.site",
+        "utls": {
+          "enabled": true,
           "fingerprint": "edge"
         }
+      },
+      "transport": {
+        "type": "tcp"
       }
     },
     {
-      "tag": "nl-vless",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "nl-one.letsgodance.site",
-            "port": 443,
-            "users": [
-              {
-                "id": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
-                "encryption": "none",
-                "flow": "xtls-rprx-vision"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "nl-one.letsgodance.site",
-          "publicKey": "s7bhpC1Z6AqLC8XSr_wMQx_tQIzrZmpktn0K-rfFiVw",
+      "type": "vless",
+      "tag": "🇳🇱 Нидерланды 1",
+      "server": "nl-one.letsgodance.site",
+      "server_port": 443,
+      "uuid": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "nl-one.letsgodance.site",
+        "utls": {
+          "enabled": true,
           "fingerprint": "edge"
         }
+      },
+      "transport": {
+        "type": "tcp"
       }
     },
     {
-      "tag": "nl-vless-2",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "212.41.1.252",
-            "port": 443,
-            "users": [
-              {
-                "id": "a42939a4-c61c-4ecc-886b-3a317bdf4452",
-                "encryption": "none",
-                "flow": "xtls-rprx-vision"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "google.com",
-          "publicKey": "vZ22ThhkpXUd5-tY-v5TTrouLHjgYYmeQgqeLt7HRz0",
+      "type": "vless",
+      "tag": "🇳🇱 Нидерланды 2",
+      "server": "212.41.1.252",
+      "server_port": 443,
+      "uuid": "a42939a4-c61c-4ecc-886b-3a317bdf4452",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "google.com",
+        "utls": {
+          "enabled": true,
           "fingerprint": "firefox"
         }
+      },
+      "transport": {
+        "type": "tcp"
       }
     },
     {
-      "tag": "pl-vless-grpc",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "144.31.2.52",
-            "port": 443,
-            "users": [
-              {
-                "id": "a42939a4-c61c-4ecc-886b-3a317bdf4452",
-                "encryption": "none",
-                "flow": "xtls-rprx-vision"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "grpc",
-        "grpcSettings": {
-          "serviceName": "grpc-tunnel"
-        },
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "dl.google.com",
-          "publicKey": "HFTFARa1OS53m4HWnjwtZ0J3lu7aoKkE7OujIyM62QI",
-          "shortId": "2a236a7fcbe0ce61",
+      "type": "vless",
+      "tag": "🇵🇱 Польша 1",
+      "server": "144.31.2.52",
+      "server_port": 443,
+      "uuid": "a42939a4-c61c-4ecc-886b-3a317bdf4452",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "dl.google.com",
+        "utls": {
+          "enabled": true,
           "fingerprint": "firefox"
         }
+      },
+      "transport": {
+        "type": "grpc",
+        "service_name": "grpc-tunnel"
       }
     },
     {
-      "tag": "pl-vless-grpc-2",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "144.31.3.59",
-            "port": 443,
-            "users": [
-              {
-                "id": "a42939a4-c61c-4ecc-886b-3a317bdf4452",
-                "encryption": "none",
-                "flow": "xtls-rprx-vision"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "grpc",
-        "grpcSettings": {
-          "serviceName": "grpc-tunnel"
-        },
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "dl.google.com",
-          "publicKey": "9MaTQKr9HwnYZSuELuWJC-uf6ghf4mNiHZ4_fKTYxFs",
-          "shortId": "da58ee1ebec20dbd",
+      "type": "vless",
+      "tag": "🇵🇱 Польша 2",
+      "server": "144.31.3.59",
+      "server_port": 443,
+      "uuid": "a42939a4-c61c-4ecc-886b-3a317bdf4452",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "dl.google.com",
+        "utls": {
+          "enabled": true,
           "fingerprint": "qq"
         }
+      },
+      "transport": {
+        "type": "grpc",
+        "service_name": "grpc-tunnel"
       }
     },
     {
-      "tag": "pl-vless-grpc-3",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "95.85.246.79",
-            "port": 443,
-            "users": [
-              {
-                "id": "a42939a4-c61c-4ecc-886b-3a317bdf4452",
-                "encryption": "none",
-                "flow": "xtls-rprx-vision"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "grpc",
-        "grpcSettings": {
-          "serviceName": "grpc-tunnel"
-        },
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "dl.google.com",
-          "publicKey": "HFTFARa1OS53m4HWnjwtZ0J3lu7aoKkE7OujIyM62QI",
-          "shortId": "2a236a7fcbe0ce61",
+      "type": "vless",
+      "tag": "🇵🇱 Польша 3",
+      "server": "95.85.246.79",
+      "server_port": 443,
+      "uuid": "a42939a4-c61c-4ecc-886b-3a317bdf4452",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "dl.google.com",
+        "utls": {
+          "enabled": true,
           "fingerprint": "firefox"
         }
+      },
+      "transport": {
+        "type": "grpc",
+        "service_name": "grpc-tunnel"
       }
     },
     {
-      "tag": "pl-vless-grpc-4",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "31.130.150.244",
-            "port": 443,
-            "users": [
-              {
-                "id": "a42939a4-c61c-4ecc-886b-3a317bdf4452",
-                "encryption": "none",
-                "flow": "xtls-rprx-vision"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "grpc",
-        "grpcSettings": {
-          "serviceName": "grpc-tunnel"
-        },
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "dl.google.com",
-          "publicKey": "HFTFARa1OS53m4HWnjwtZ0J3lu7aoKkE7OujIyM62QI",
-          "shortId": "2a236a7fcbe0ce61",
+      "type": "vless",
+      "tag": "🇵🇱 Польша 4",
+      "server": "31.130.150.244",
+      "server_port": 443,
+      "uuid": "a42939a4-c61c-4ecc-886b-3a317bdf4452",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "dl.google.com",
+        "utls": {
+          "enabled": true,
           "fingerprint": "qq"
         }
+      },
+      "transport": {
+        "type": "grpc",
+        "service_name": "grpc-tunnel"
       }
     },
     {
-      "tag": "se-vless",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "swe-one.letsgodance.site",
-            "port": 443,
-            "users": [
-              {
-                "id": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
-                "encryption": "none",
-                "flow": "xtls-rprx-vision"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "swe-one.letsgodance.site",
-          "publicKey": "0DU2XI6J-aVzvYzrKQ7XOI9WPRMOADKTyn2V9E71WA8",
-          "shortId": "b4c513c67294b791",
+      "type": "vless",
+      "tag": "🇸🇪 Швеция",
+      "server": "swe-one.letsgodance.site",
+      "server_port": 443,
+      "uuid": "5d36ddf8-dde5-4b2d-8213-d3255f22a0f1",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "swe-one.letsgodance.site",
+        "utls": {
+          "enabled": true,
           "fingerprint": "edge"
         }
+      },
+      "transport": {
+        "type": "tcp"
       }
     },
     {
-      "tag": "ch-vless-grpc",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "176.65.144.125",
-            "port": 443,
-            "users": [
-              {
-                "id": "a42939a4-c61c-4ecc-886b-3a317bdf4452",
-                "encryption": "none",
-                "flow": "xtls-rprx-vision"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "grpc",
-        "grpcSettings": {
-          "serviceName": "grpc-tunnel"
-        },
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "dl.google.com",
-          "publicKey": "HFTFARa1OS53m4HWnjwtZ0J3lu7aoKkE7OujIyM62QI",
-          "shortId": "2a236a7fcbe0ce61",
+      "type": "vless",
+      "tag": "🇨🇭 Швейцария",
+      "server": "176.65.144.125",
+      "server_port": 443,
+      "uuid": "a42939a4-c61c-4ecc-886b-3a317bdf4452",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "dl.google.com",
+        "utls": {
+          "enabled": true,
           "fingerprint": "firefox"
         }
+      },
+      "transport": {
+        "type": "grpc",
+        "service_name": "grpc-tunnel"
       }
     },
     {
-      "tag": "direct",
-      "protocol": "freedom"
+      "type": "direct",
+      "tag": "direct"
     },
     {
-      "tag": "block",
-      "protocol": "blackhole"
+      "type": "block",
+      "tag": "block"
     }
   ]
 }
